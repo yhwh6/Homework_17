@@ -57,9 +57,11 @@ namespace Homework_16
                     daSQL.SelectCommand = new SqlCommand(sql, connectionSQL);
 
                     sql = @"INSERT INTO Users (lastName, firstName, middleName, phoneNumber, email) 
-                     VALUES (@lastName, @firstName, @middleName, @phoneNumber, @email);";
+                                 VALUES (@lastName, @firstName, @middleName, @phoneNumber, @email); 
+                     SET @Id = @@IDENTITY;";
 
                     daSQL.InsertCommand = new SqlCommand(sql, connectionSQL);
+                    daSQL.InsertCommand.Parameters.Add("@Id", SqlDbType.Int, 4, "Id").Direction = ParameterDirection.Output;
                     daSQL.InsertCommand.Parameters.Add("@lastName", SqlDbType.NVarChar, 50, "lastName");
                     daSQL.InsertCommand.Parameters.Add("@firstName", SqlDbType.NVarChar, 50, "firstName");
                     daSQL.InsertCommand.Parameters.Add("@middleName", SqlDbType.NVarChar, 50, "middleName");
@@ -67,19 +69,20 @@ namespace Homework_16
                     daSQL.InsertCommand.Parameters.Add("@email", SqlDbType.NVarChar, 50, "email");
 
                     sql = @"UPDATE Users SET 
-                    lastName = @lastName,
-                    firstName = @firstName, 
-                    middleName = @middleName,
-                    phoneNumber = @phoneNumber,
-                    email = @email
-                    WHERE Id = @Id";
+                            lastName = @lastName,
+                            firstName = @firstName, 
+                            middleName = @middleName,
+                            phoneNumber = @phoneNumber,
+                            email = @email
+                            WHERE Id = @Id";
 
                     daSQL.UpdateCommand = new SqlCommand(sql, connectionSQL);
+                    daSQL.UpdateCommand.Parameters.Add("@Id", SqlDbType.Int, 4, "Id").SourceVersion = DataRowVersion.Original;
                     daSQL.UpdateCommand.Parameters.Add("@lastName", SqlDbType.NVarChar, 50, "lastName");
                     daSQL.UpdateCommand.Parameters.Add("@firstName", SqlDbType.NVarChar, 50, "firstName");
                     daSQL.UpdateCommand.Parameters.Add("@middleName", SqlDbType.NVarChar, 50, "middleName");
                     daSQL.UpdateCommand.Parameters.Add("@phoneNumber", SqlDbType.NVarChar, 50, "phoneNumber");
-                    daSQL.UpdateCommand.Parameters.Add("@Id", SqlDbType.Int, 4, "Id").SourceVersion = DataRowVersion.Original;
+                    daSQL.UpdateCommand.Parameters.Add("@email", SqlDbType.NVarChar, 50, "email");
 
                     sql = "DELETE FROM Users WHERE Id = @Id";
 
@@ -107,50 +110,64 @@ namespace Homework_16
                 DataSource = @"Homework_16.accdb"
             };
 
-            using OleDbConnection connectionAccess = new OleDbConnection(strCon.ConnectionString);
-            connectionAccess.StateChange += SqlConnection_StateChange;
-
-            try
+            using (connectionAccess = new OleDbConnection(strCon.ConnectionString))
             {
-                connectionAccess.Open();
-                dtAccess = new DataTable();
-                daAccess = new OleDbDataAdapter();
-                var sql = @"SELECT * FROM Goods WHERE email = ?";
-                daAccess.SelectCommand = new OleDbCommand(sql, connectionAccess);
-                daAccess.SelectCommand.Parameters.Add("email", OleDbType.Char, 50).Value = (dg1.SelectedItem as DataRowView)?.Row[5] ?? "mail@mail";
+                connectionAccess.StateChange += SqlConnection_StateChange;
+                try
+                {
+                    connectionAccess.Open();
+                    dtAccess = new DataTable();
+                    daAccess = new OleDbDataAdapter();
+                    var sql = @"SELECT * FROM Goods WHERE email = @email Order By Goods.ID";
+                    daAccess.SelectCommand = new OleDbCommand(sql, connectionAccess);
+                    daAccess.SelectCommand.Parameters.Add("@email", OleDbType.Char, 50, "email");
 
-                sql = @"INSERT INTO Goods (email, code, goodName) 
-                            VALUES (?, ?, ?);
-                            SELECT @@IDENTITY;";
+                    if (dg1.SelectedItem is DataRowView selectedRow)
+                    {
+                        daAccess.SelectCommand.Parameters["@email"].Value =
+                            selectedRow.Row.Field<string>("email");
+                    }
+                    else
+                    {
+                        daAccess.SelectCommand.Parameters["@email"].Value =
+                            "mail@mail";
+                    }
 
-                daAccess.InsertCommand = new OleDbCommand(sql, connectionAccess);
-                daAccess.InsertCommand.Parameters.Add("email", OleDbType.Char, 50, "email");
-                daAccess.InsertCommand.Parameters.Add("code", OleDbType.Char, 50, "code");
-                daAccess.InsertCommand.Parameters.Add("goodName", OleDbType.Char, 50, "goodName");
+                    sql = @"INSERT INTO Goods (email, code, goodName) 
+                                    VALUES (@email, @code, @goodName);
+                                    SET @ID = @@IDENTITY;";
 
-                sql = @"UPDATE Goods SET 
-                email = ?,
-                code = ?, 
-                goodName = ? 
-                WHERE ID = ?";
+                    daAccess.InsertCommand = new OleDbCommand(sql, connectionAccess);
 
-                daAccess.UpdateCommand = new OleDbCommand(sql, connectionAccess);
-                daAccess.UpdateCommand.Parameters.Add("email", OleDbType.Char, 50, "email");
-                daAccess.UpdateCommand.Parameters.Add("code", OleDbType.Char, 50, "code");
-                daAccess.UpdateCommand.Parameters.Add("goodName", OleDbType.Char, 50, "goodName");
-                daAccess.UpdateCommand.Parameters.Add("ID", OleDbType.Integer, 4, "ID").SourceVersion = DataRowVersion.Original;
+                    daAccess.InsertCommand.Parameters.Add("@ID", OleDbType.Integer, 4, "ID").Direction = ParameterDirection.Output;
+                    daAccess.InsertCommand.Parameters.Add("@email", OleDbType.Char, 50, "email");
+                    daAccess.InsertCommand.Parameters.Add("@code", OleDbType.Char, 50, "code");
+                    daAccess.InsertCommand.Parameters.Add("@goodName", OleDbType.Char, 50, "goodName");
 
-                sql = "DELETE FROM Goods WHERE ID = ?";
+                    sql = @"UPDATE Goods SET 
+                            email = @email,
+                            code = @code, 
+                            goodName = @goodName 
+                            WHERE ID = @ID";
 
-                daAccess.DeleteCommand = new OleDbCommand(sql, connectionAccess);
-                daAccess.DeleteCommand.Parameters.Add("ID", OleDbType.Integer, 4, "ID");
+                    daAccess.UpdateCommand = new OleDbCommand(sql, connectionAccess);
+                    daAccess.UpdateCommand.Parameters.Add("@ID", OleDbType.Integer, 4, "ID").SourceVersion = DataRowVersion.Original;
+                    daAccess.UpdateCommand.Parameters.Add("@email", OleDbType.Char, 50, "email");
+                    daAccess.UpdateCommand.Parameters.Add("@code", OleDbType.Char, 50, "code");
+                    daAccess.UpdateCommand.Parameters.Add("@goodName", OleDbType.Char, 50, "goodName");
 
-                daAccess.Fill(dtAccess);
-                dg2.DataContext = dtAccess.DefaultView;
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message, "PrepareMSAccess");
+                    sql = "DELETE FROM Goods WHERE ID = @ID";
+
+                    daAccess.DeleteCommand = new OleDbCommand(sql, connectionAccess);
+                    daAccess.DeleteCommand.Parameters.Add("@ID", OleDbType.Integer, 4, "ID");
+
+                    daAccess.Fill(dtAccess);
+                    dg2.DataContext = dtAccess.DefaultView;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "PrepareMSAccess");
+                }
             }
         }
 

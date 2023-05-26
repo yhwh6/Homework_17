@@ -1,9 +1,9 @@
-﻿<Window x:Class="Homework_16.MainWindow"
+﻿<Window x:Class="Homework_17.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Homework_16"
+        xmlns:local="clr-namespace:Homework_17"
         mc:Ignorable="d"
         Title="Online shop database" Height="450" Width="800" 
         WindowStartupLocation="CenterScreen" 
@@ -23,29 +23,28 @@
                   IsSynchronizedWithCurrentItem="True"
                   SelectionMode="Single"
                   AutoGenerateColumns="False"
-                  ItemsSource="{Binding}"
                   CanUserDeleteRows="False"
                   Grid.Column="0"
-                  Grid.Row="0" CellEditEnding="dg1_CellEditEnding" CurrentCellChanged="dg1_CurrentCellChanged" PreviewKeyDown="dg1_PreviewKeyDown" SelectionChanged="dg1_SelectionChanged">
+                  Grid.Row="0" CellEditEnding="dg1_CellEditEnding" CurrentCellChanged="dg1_CurrentCellChanged" PreviewKeyDown="dg1_PreviewKeyDown">
             <DataGrid.Columns>
                 <DataGridTextColumn x:Name="id"
                                     Binding="{Binding Id}"
                                     Header="Id"
                                     IsReadOnly="True" />
                 <DataGridTextColumn x:Name="lastName"
-                                    Binding="{Binding lastName}"
+                                    Binding="{Binding LastName}"
                                     Header="Last Name" />
                 <DataGridTextColumn x:Name="fistName"
-                                    Binding="{Binding firstName}"
+                                    Binding="{Binding FirstName}"
                                     Header="First Name" />
                 <DataGridTextColumn x:Name="middleName"
-                                    Binding="{Binding middleName}"
+                                    Binding="{Binding MiddleName}"
                                     Header="Middle Name" />
                 <DataGridTextColumn x:Name="email"
-                                    Binding="{Binding email}"
+                                    Binding="{Binding Email}"
                                     Header="Email" />
                 <DataGridTextColumn x:Name="phoneNumber"
-                                    Binding="{Binding phoneNumber}"
+                                    Binding="{Binding PhoneNumber}"
                                     Header="Phone Number" />
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
@@ -59,7 +58,6 @@
                   IsSynchronizedWithCurrentItem="True"
                   SelectionMode="Single"
                   AutoGenerateColumns="False"
-                  ItemsSource="{Binding}"
                   CanUserDeleteRows="False"
                   CanUserAddRows="False"
                   IsReadOnly="True"
@@ -71,13 +69,13 @@
                                     Header="Id"
                                     IsReadOnly="True" />
                 <DataGridTextColumn x:Name="goods_email"
-                                    Binding="{Binding email}"
+                                    Binding="{Binding Email}"
                                     Header="Email" />
                 <DataGridTextColumn x:Name="goods_code"
-                                    Binding="{Binding code}"
+                                    Binding="{Binding Code}"
                                     Header="Product Code" />
                 <DataGridTextColumn x:Name="goods_goodName"
-                                    Binding="{Binding goodName}"
+                                    Binding="{Binding GoodName}"
                                     Header="Product Name" />
             </DataGrid.Columns>
         </DataGrid>
